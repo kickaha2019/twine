@@ -35,9 +35,15 @@ class Compiler
     (0...results.size).each do |i|
       result = results[-i-1]
       if result.goto && result.goto.world != choice.world
-        io.print "<<if not $w#{result.goto.world.number}>>"
-        io.print "<<set $c#{choice.number} = #{results.size-i}>>"
-        io.print "<</if>>"
+        if result.goto == @finish
+          io.print "<<if $can_finish>>"
+          io.print "<<set $c#{choice.number} = #{results.size-i}>>"
+          io.print "<</if>>"
+        else
+          io.print "<<if not $w#{result.goto.world.number}>>"
+          io.print "<<set $c#{choice.number} = #{results.size-i}>>"
+          io.print "<</if>>"
+        end
       else
         io.print "<<if (not $r#{result.number}) or ($c#{choice.number} < 0)>>"
         io.print "<<set $c#{choice.number} = #{results.size-i}>>"
@@ -142,6 +148,7 @@ IFID
     end
 
     generate_debug( io)
+    generate_test_finish( scene, io)
 
     io.print "<<if $result != \"\">><<print $result + \"\\n\\n\">><</if>>"
 
@@ -173,7 +180,8 @@ IFID
       generate_choice_decide( choice, io)
       generate_choice_before( choice, io)
     end
-    io.print "$after\n\n"
+
+    io.print " $after\n\n"
 
     if scene.dialogue
       generate_dialogue( scene.dialogue, io)
@@ -202,6 +210,24 @@ START
     number_game_elements( io)
     # io.puts "<<goto s#{@game.world_by_name('Start').scene_by_name('Start').number}>>"
     io.print "<</if>>"
+  end
+
+  def generate_test_finish( scene, io)
+    return if (scene == @finish) || (scene == @start)
+
+    exits = []
+    scene.world.scenes do |sibling|
+      sibling.choices do |choice|
+        choice.results do |result|
+          if result.goto && (result.goto.world != scene.world) && (result.goto != @finish)
+            exits << result.goto.world.number
+          end
+        end
+      end
+    end
+
+    exits_tests = exits.uniq.collect {|en| "$w#{en}"}.join( " && ")
+    io.print "<<set $can_finish = #{exits_tests}>>"
   end
 
   def generate_text( text, io)
