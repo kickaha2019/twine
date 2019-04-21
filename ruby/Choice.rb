@@ -7,8 +7,8 @@ class Choice < Element
 	attr_reader :before, :option
   attr_accessor :number
 
-	def initialize( parent, file, lineno)
-    super( parent, file, lineno)
+	def initialize( parent, indent, file, lineno)
+    super( parent, indent, file, lineno)
     @option = nil
     @before = nil
     @results = []
@@ -43,7 +43,7 @@ class Choice < Element
       error( 'Result has no parameters', file, lineno)
     end
     
-    @results << Result.new( self, file, lineno)
+    @results << Result.new( self, indent, file, lineno)
     @results[-1]
   end
 

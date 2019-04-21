@@ -55,7 +55,12 @@ class Parser
       if m = /^(\s*)(\S.*)$/.match( line)
         debug( "parse_file2", line)
         indent, text = m[1], m[2]
-        if (indent.size > parent.indent.size) && parent.textual?
+
+        while (indent.size <= parent.indent.size) && (parent.indent != '')
+          parent = parent.parent
+        end
+
+        if (indent.size > 0) && parent.textual?
           debug( "parse_file3", line)
           parent.add_text( text)
         else

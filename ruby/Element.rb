@@ -7,8 +7,9 @@
 class Element
   attr_reader :parent, :file, :lineno, :debug
   
-  def initialize( parent, file, lineno)
+  def initialize( parent, indent, file, lineno)
     @parent = parent
+    @indent = indent
     @file   = file
     @lineno = lineno
     @debug  = false
@@ -71,7 +72,7 @@ class Element
   end
 
   def indent
-    ''
+    @indent
   end
 
   def inspect

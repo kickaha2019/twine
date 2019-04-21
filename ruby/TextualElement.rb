@@ -8,8 +8,7 @@ class TextualElement < Element
   attr_accessor :used
 
 	def initialize( indent, parent, file, lineno)
-    super( parent, file, lineno)
-    @indent = indent
+    super( parent, indent, file, lineno)
     @lines = []
     @used = false
 
@@ -20,10 +19,6 @@ class TextualElement < Element
 
   def add_text( line)
     @lines << line
-  end
-
-  def indent
-    @indent
   end
 
   def text

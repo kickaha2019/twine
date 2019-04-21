@@ -10,8 +10,8 @@ class World < Element
 	attr_reader :name, :suggested, :image
   attr_accessor :number
   
-	def initialize( parent, name, file, lineno)
-    super( parent, file, lineno)
+	def initialize( parent, name, indent, file, lineno)
+    super( parent, indent, file, lineno)
 		@name = name
     @image = nil
     @scenes = {}
@@ -42,7 +42,7 @@ class World < Element
       args = file + ':' + lineno.to_s
     end
     
-    @scenes[args.downcase] = Scene.new( self, args, file, lineno)
+    @scenes[args.downcase] = Scene.new( self, args, indent, file, lineno)
   end
 
   def bind_gotos( game)

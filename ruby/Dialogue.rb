@@ -1,8 +1,8 @@
 class Dialogue < Element
 	attr_reader :prompt
 
-	def initialize( parent, file, lineno)
-    super( parent, file, lineno)
+	def initialize( parent, indent, file, lineno)
+    super( parent, indent, file, lineno)
     @prompt = nil
     @options = []
     @responses = []

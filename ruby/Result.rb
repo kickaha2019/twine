@@ -2,8 +2,8 @@ class Result < Element
 	attr_reader :after, :goto, :text
   attr_accessor :longest, :unvisited, :solution, :number
 
-	def initialize( parent, file, lineno)
-    super( parent, file, lineno)
+	def initialize( parent, indent, file, lineno)
+    super( parent, indent, file, lineno)
     @text = nil
     @sets = {}
     @goto = nil

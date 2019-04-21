@@ -13,8 +13,8 @@ class Scene < Element
   attr_reader :name, :dialogue, :prompt, :image
   attr_accessor :number
 
-	def initialize( parent, name, file, lineno)
-    super( parent, file, lineno)
+	def initialize( parent, name, indent, file, lineno)
+    super( parent, indent, file, lineno)
 		@name = name
     @sets = {}
     @texts = []
@@ -29,7 +29,7 @@ class Scene < Element
       error( 'Choice has no parameters', file, lineno)
     end
     
-    @choices << Choice.new( self, file, lineno)
+    @choices << Choice.new( self, indent, file, lineno)
     @choices[-1]
   end
   
@@ -42,7 +42,7 @@ class Scene < Element
       error( 'Scene already has a dialogue', file, lineno)
     end
     
-    @dialogue = Dialogue.new( self, file, lineno)
+    @dialogue = Dialogue.new( self, indent, file, lineno)
   end
 
   def add_image( indent, args, file, lineno)

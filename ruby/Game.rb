@@ -38,7 +38,7 @@ class Game
       args = file + ':' + lineno.to_s
     end
     
-    @worlds[args.downcase] = World.new( self, args, file, lineno)
+    @worlds[args.downcase] = World.new( self, args, indent, file, lineno)
   end
 
   def bind_gotos
