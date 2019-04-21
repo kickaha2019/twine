@@ -65,6 +65,9 @@ class Compiler
       set_variable( 'result', result.text, io)
       set_variable( 'after', result.after, io) if result.after
       io.print "<<set $r#{result.number} = true>>"
+      result.sets do |k,v|
+        set_variable( "v#{@variables[k]}", v, io)
+      end
       io.print "<</button>><<print \"<BR>\">><</if>>"
     end
   end
