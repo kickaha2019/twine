@@ -51,7 +51,7 @@ class Parser
       line = lines[i].chomp
       next if /^\s*#/ =~ line
       debug( "parse_file1", line, parent:parent)
-      
+
       if m = /^(\s*)(\S.*)$/.match( line)
         debug( "parse_file2", line)
         indent, text = m[1], m[2]

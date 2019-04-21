@@ -127,6 +127,7 @@ class Compiler
       io.print "<<if ! $t#{answer.number}>><<button \""
       generate_text( option, io)
       io.print "\" \"s#{dialogue.parent.number}\">>"
+      io.print "<<set $t#{answer.number} = true>>"
       set_variable( 'result', answer, io)
       io.print "<</button>><<print \"<BR>\">><</if>>"
     end
