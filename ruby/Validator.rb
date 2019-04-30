@@ -30,11 +30,28 @@ class Validator
     @finish = nil
     determine_worlds
     determine_world_linkage
+    determine_choice_first_linkage
+  end
+
+  def determine_choice_first_linkage
+    @choice_first_linkage = Hash.new {|h,k| h[k] = {}}
+
+    ([@start] + @worlds.values).each do |world|
+      world.scenes do |scene|
+        scene.choices do |choice|
+          choice.links.each do |goto|
+            if world != goto.goto.world
+              @choice_first_linkage[world.name][goto.goto.world.name] = goto.goto.world
+              break
+            end
+          end
+        end
+      end
+    end
   end
 
   def determine_world_linkage
     @world2worlds = Hash.new {|h,k| h[k] = {}}
-    @world_entry = Hash.new {|h,k| h[k] = {}}
 
     ([@start] + @worlds.values).each do |world|
       world.scenes do |scene|
@@ -42,7 +59,6 @@ class Validator
           gotos.each do |goto|
             if world != goto.goto.world
               @world2worlds[world.name][goto.goto.world.name] = goto.goto.world
-              @world_entry[goto.goto.world.name][goto.goto.scene.name] = goto.goto.scene
             end
           end
         end
@@ -97,8 +113,9 @@ class Validator
     validate_scene_linkage
     validate_grouping
     validate_next_scenes_reachable
+    validate_next_scenes_reachable_first
     validate_only_next_reachable
-    validate_unique_gotos
+    #validate_unique_gotos
 
     @game.validate
   end
@@ -108,6 +125,16 @@ class Validator
       tos.each do |to|
         if (from != to) && @world2worlds[from.name][to.name].nil?
           error( from, "Cannot reach #{to.name}")
+        end
+      end
+    end
+  end
+
+  def validate_can_reach_first( froms, tos)
+    froms.each do |from|
+      tos.each do |to|
+        if (from != to) && @choice_first_linkage[from.name][to.name].nil?
+          error( from, "Cannot reach #{to.name} first in choice")
         end
       end
     end
@@ -145,6 +172,14 @@ class Validator
       validate_can_reach( @groups[i], @groups[i+1])
     end
     validate_can_reach( @groups[-1], @groups[0] + [@finish])
+  end
+
+  def validate_next_scenes_reachable_first
+    validate_can_reach_first( [@start], @groups[0])
+    (0..(@groups.size-2)).each do |i|
+      validate_can_reach_first( @groups[i], @groups[i+1])
+    end
+    validate_can_reach_first( @groups[-1], @groups[0])
   end
 
   def validate_only_next_reachable
