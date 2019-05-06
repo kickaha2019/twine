@@ -22,7 +22,9 @@ class TextualElement < Element
   end
 
   def text
-    @lines.collect {|l| (l == '') ? "\n\n" : l}.join( ' ').strip
+    joined = @lines.collect {|l| (l == '') ? "\n\n" : l}.join( ' ').strip
+
+    joined.gsub( '\\t', "&nbsp;&nbsp;&nbsp;&nbsp;").gsub( '\\n', "\n").gsub( "\n ", "\n").gsub( "\n\n\n", "\n\n")
   end
 
   def textual?
