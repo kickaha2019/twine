@@ -55,6 +55,8 @@ class Compiler
   def generate_choice_options( choice, io)
     results = []
     choice.results {|result| results << result}
+    separ = choice.parent.choice_separator
+    separ = '<BR>' if separ.nil?
 
     # Generate option buttons
     results.each_index do |i|
@@ -68,7 +70,7 @@ class Compiler
       result.sets do |k,v|
         set_variable( "v#{@variables[k]}", v, io)
       end
-      io.print "<</button>><<print \"<BR>\">><</if>>"
+      io.print "<</button>><<print \"#{separ}\">><</if>>"
     end
   end
 

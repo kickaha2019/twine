@@ -10,7 +10,7 @@ require 'Assign.rb'
 require 'Text.rb'
 
 class Scene < Element
-  attr_reader :name, :dialogue, :prompt, :image
+  attr_reader :name, :dialogue, :prompt, :image, :choice_separator
   attr_accessor :number
 
 	def initialize( parent, name, indent, file, lineno)
@@ -22,6 +22,7 @@ class Scene < Element
     @dialogue = nil
     @prompt = nil
     @image = nil
+    @choice_separator = nil
 	end
 
   def add_choice( indent, args, file, lineno)
@@ -32,7 +33,20 @@ class Scene < Element
     @choices << Choice.new( self, indent, file, lineno)
     @choices[-1]
   end
-  
+
+  def add_choice_separator( indent, args, file, lineno)
+    if args == ''
+      error( 'Scene choice separator has a parameter', file, lineno)
+    end
+
+    if @choice_separator
+      error( 'Choice separator already defined for scene', file, lineno)
+    end
+
+    @choice_separator = args
+    self
+  end
+
   def add_dialogue( indent, args, file, lineno)
     if args != ''
       error( 'Dialogue has no parameters', file, lineno)

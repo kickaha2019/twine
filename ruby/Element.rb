@@ -27,6 +27,10 @@ class Element
     @parent.add_choice( indent, args, file, lineno)
   end
 
+  def add_choice_separator( indent, args, file, lineno)
+    @parent.add_choice_separator( indent, args, file, lineno)
+  end
+
   def add_debug( indent, args, file, lineno)
     if args != ''
       error( 'Debug has no parameters', file, lineno)
