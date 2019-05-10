@@ -22,8 +22,9 @@ class Compiler
   def generate_choice_before( choice, io)
     return if choice.before.nil?
     io.print "<<if $c#{choice.number} >= 0>> "
-    generate_text( choice.before, io)
-    io.print "<</if>>"
+    io.print "<<set $befores = $befores + \" \" + "
+    generate_literal( choice.before, io)
+    io.print ">><</if>>"
   end
 
   def generate_choice_decide( choice, io)
@@ -166,6 +167,10 @@ IFID
       io.print "<<set $w#{scene.parent.number} = true>>"
     end
 
+    io.print "<<set $befores = \"\">>"
+    io.print "<<set _befores_seen = false>>"
+    io.print "<<set _after_seen = false>>"
+
     generate_debug( io)
     generate_test_finish( scene, io)
 
@@ -187,20 +192,28 @@ IFID
     io.print "<<set $s#{scene.number} += 1>>"
     io.print "<</if>>"
 
+    scene.choices do |choice|
+      generate_choice_before( choice, io)
+    end
+
     ntexts = 0
     scene.texts do |text|
       ntexts += 1
       io.print "<<if $s#{scene.number} == #{ntexts}>>"
-      generate_text( text, io)
+      seen = {'$after' => false, '$befores' => false}
+      generate_text( text, io , seen)
+      io.print "<<set _after_seen = true>>" if seen['$after']
+      io.print "<<set _befores_seen = true>>" if seen['$befores']
       io.print "<</if>>"
     end
 
     scene.choices do |choice|
       generate_choice_decide( choice, io)
-      generate_choice_before( choice, io)
     end
 
-    io.print " $after\n\n"
+    io.print "<<if ! _befores_seen>> $befores<</if>>"
+    io.print "<<if ! _after_seen>> $after<</if>>"
+    io.print "\n\n"
 
     if scene.dialogue
       generate_dialogue( scene.dialogue, io)
@@ -249,8 +262,12 @@ START
     io.print "<<set $can_finish = #{exits_tests}>>"
   end
 
-  def generate_text( text, io)
-    io.print replace_variables( text.text.strip)
+  def generate_text( text, io, seen = {})
+    emit = replace_variables( text.text.strip)
+    seen.keys.each do |key|
+      seen[key] = true if emit.include?( key)
+    end
+    io.print emit
   end
 
   def generate_title(io)
