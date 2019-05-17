@@ -64,12 +64,16 @@ class Compiler
       result = results[i]
       io.print "<<if $c#{choice.number} is #{i+1}>><<button \""
       generate_text( choice.option, io)
-      io.print "\" \"s#{result.goto ? result.goto.number : choice.parent.number}\">>"
-      set_variable( 'result', result.text, io)
-      set_variable( 'after', result.after, io) if result.after
-      io.print "<<set $r#{result.number} = true>>"
-      result.sets do |k,v|
-        set_variable( "v#{@variables[k]}", v, io)
+      if result.goto == @start
+        io.print "\">><<run Engine.restart()>>"
+      else
+        io.print "\" \"s#{result.goto ? result.goto.number : choice.parent.number}\">>"
+        set_variable( 'result', result.text, io)
+        set_variable( 'after', result.after, io) if result.after
+        io.print "<<set $r#{result.number} = true>>"
+        result.sets do |k,v|
+          set_variable( "v#{@variables[k]}", v, io)
+        end
       end
       io.print "<</button>><<print \"#{separ}\">><</if>>"
     end
